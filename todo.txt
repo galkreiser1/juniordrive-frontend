@@ -1,0 +1,13 @@
+--mandatory--
+
+1. createForm
+2. 404 page
+3. add Linkedin OAuth to form
+
+--maybe--
+
+1. useEffect custom hook
+
+
+
+
