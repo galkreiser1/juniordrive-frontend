@@ -77,10 +77,7 @@ const UserTable = (props) => {
                       <Tr key={index}>
                         <Td>{capitalizeCompanyName(row.company)}</Td>
                         <Td display="flex" gap={4}>
-                          {capitalizeCompanyName(row.firstName) +
-                            " " +
-                            capitalizeCompanyName(row.lastName)}{" "}
-                          (
+                          {capitalizeCompanyName(row.name || "")}(
                           <Badge mr={-3} ml={-3}>
                             {row.numReferrals}
                           </Badge>

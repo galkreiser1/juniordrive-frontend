@@ -1,200 +1,206 @@
-import { useForm } from "react-hook-form";
+"use client";
+
 import {
+  Button,
   Flex,
-  Box,
   FormControl,
   FormLabel,
-  Input,
-  HStack,
-  Stack,
-  Button,
   Heading,
-  Text,
+  Input,
+  Stack,
   useColorModeValue,
+  FormHelperText,
+  SimpleGrid,
   FormErrorMessage,
+  useToast,
 } from "@chakra-ui/react";
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
+
+import { useAuth } from "../../context/AuthContext";
 
 import axios from "axios";
 
-export default function SignUp() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+const ProfileSchema = Yup.object().shape({
+  firstName: Yup.string()
+    .min(2, "Too Short!")
+    .max(50, "Too Long!")
+    .required("First name is required"),
+  lastName: Yup.string()
+    .min(2, "Too Short!")
+    .max(50, "Too Long!")
+    .required("Last name is required"),
+  linkedin: Yup.string()
+    .url("Must be a valid URL")
+    .matches(
+      /^https?:\/\/(www\.)?linkedin\.com\/in\/.*$/,
+      "Must be a valid LinkedIn profile URL"
+    )
+    .nullable(),
+  company: Yup.string()
+    .min(2, "Too Short!")
+    .max(100, "Too Long!")
+    .required("Company name is required"),
+  role: Yup.string()
+    .min(2, "Too Short!")
+    .max(100, "Too Long!")
+    .required("Role is required"),
+});
 
-  const onSubmit = async (data) => {
+export default function SignUp() {
+  const toast = useToast();
+  const { user } = useAuth();
+  console.log(user);
+
+  const handleSubmit = async (values) => {
     try {
-      console.log(data);
       const response = await axios.post(
         "http://localhost:5000/api/referers",
         data
       );
-      console.log(response.data);
-    } catch (err) {
-      console.log(err);
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been successfully updated",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
   return (
-    <Flex align={"center"} justify={"center"}>
-      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
-        <Stack align={"center"}>
-          <Heading fontSize={"4xl"} textAlign={"center"}>
-            Sign Up
-          </Heading>
-          <Text fontSize={"lg"} color={"gray.600"}>
-            to help refer new juniors
-          </Text>
-        </Stack>
-        <Box
-          rounded={"lg"}
-          bg={useColorModeValue("white", "gray.700")}
-          boxShadow={"lg"}
-          p={8}
+    <Flex
+      minH={"100vh"}
+      align={"center"}
+      justify={"center"}
+      bg={useColorModeValue("gray.50", "gray.800")}
+    >
+      <Stack
+        spacing={4}
+        w={"full"}
+        maxW={"xl"}
+        bg={useColorModeValue("white", "gray.700")}
+        rounded={"xl"}
+        boxShadow={"lg"}
+        p={6}
+      >
+        <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }} mb={6}>
+          Profile Settings
+        </Heading>
+
+        <Formik
+          initialValues={{
+            name: user?.name || "name",
+            linkedin: "",
+            company: "",
+            role: "",
+            email: user?.email,
+          }}
+          validationSchema={ProfileSchema}
+          onSubmit={handleSubmit}
         >
-          <Stack
-            as="form"
-            spacing={4}
-            onSubmit={handleSubmit(onSubmit)}
-            noValidate
-          >
-            <HStack>
-              <Box>
-                <FormControl id="firstName" isInvalid={errors.firstName}>
-                  <FormLabel>First Name</FormLabel>
-                  <Input
-                    type="text"
-                    {...register("firstName", {
-                      required: "First name is required",
-                    })}
-                  />
-                  {errors.firstName && (
-                    <Text color="red.500" fontSize="sm">
-                      {errors.firstName.message}
-                    </Text>
+          {
+            <Form>
+              <Stack spacing={4} mt={10}>
+                <Field name="name">
+                  {({ field, form }) => (
+                    <FormControl
+                      isInvalid={form.errors.name && form.touched.name}
+                    >
+                      <FormLabel>Full Name</FormLabel>
+                      <Input {...field} />
+                      <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                    </FormControl>
                   )}
-                </FormControl>
-              </Box>
-              <Box>
-                <FormControl id="lastName" isInvalid={errors.lastName}>
-                  <FormLabel>Last Name</FormLabel>
+                </Field>
+
+                <FormControl id="email">
+                  <FormLabel>Email</FormLabel>
                   <Input
-                    type="text"
-                    {...register("lastName", {
-                      required: "Last name is required",
-                    })}
+                    placeholder={user?.email}
+                    isReadOnly
+                    bg={useColorModeValue("gray.100", "gray.600")}
+                    type="email"
                   />
-                  {errors.lastName && (
-                    <Text color="red.500" fontSize="sm">
-                      {errors.lastName.message}
-                    </Text>
-                  )}
                 </FormControl>
-              </Box>
-            </HStack>
 
-            <FormControl id="company" isInvalid={errors.company}>
-              <FormLabel>Company</FormLabel>
-              <Input
-                type="text"
-                {...register("company", { required: "Company is required" })}
-              />
-              {errors.company && (
-                <Text color="red.500" fontSize="sm">
-                  {errors.company.message}
-                </Text>
-              )}
-            </FormControl>
+                <Field name="linkedin">
+                  {({ field, form }) => (
+                    <FormControl
+                      isInvalid={form.errors.linkedin && form.touched.linkedin}
+                    >
+                      <FormLabel>LinkedIn Profile</FormLabel>
+                      <Input
+                        {...field}
+                        placeholder="https://linkedin.com/in/your-profile"
+                      />
+                      <FormHelperText>
+                        Optional: Add your LinkedIn profile URL
+                      </FormHelperText>
+                      <FormErrorMessage>
+                        {form.errors.linkedin}
+                      </FormErrorMessage>
+                    </FormControl>
+                  )}
+                </Field>
 
-            <FormControl id="role" isInvalid={errors.role}>
-              <FormLabel>Role</FormLabel>
-              <Input
-                type="text"
-                {...register("role", { required: "Role is required" })}
-              />
-              {errors.role && (
-                <Text color="red.500" fontSize="sm">
-                  {errors.role.message}
-                </Text>
-              )}
-            </FormControl>
+                <Field name="company">
+                  {({ field, form }) => (
+                    <FormControl
+                      isInvalid={form.errors.company && form.touched.company}
+                    >
+                      <FormLabel>Company</FormLabel>
+                      <Input {...field} placeholder="Current Company" />
+                      <FormErrorMessage>{form.errors.company}</FormErrorMessage>
+                    </FormControl>
+                  )}
+                </Field>
 
-            <FormControl id="email" isInvalid={errors.email}>
-              <FormLabel>Email address</FormLabel>
-              <Input
-                type="email"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
-                    message: "Invalid email address",
-                  },
-                })}
-              />
-              {errors.email && (
-                <Text color="red.500" fontSize="sm">
-                  {errors.email.message}
-                </Text>
-              )}
-            </FormControl>
+                <Field name="role">
+                  {({ field, form }) => (
+                    <FormControl
+                      isInvalid={form.errors.role && form.touched.role}
+                    >
+                      <FormLabel>Role</FormLabel>
+                      <Input {...field} placeholder="Your Role/Position" />
+                      <FormErrorMessage>{form.errors.role}</FormErrorMessage>
+                    </FormControl>
+                  )}
+                </Field>
 
-            {/* <FormControl id="linkedin" isInvalid={errors.linkedin}>
-              <FormLabel>LinkedIn</FormLabel>
-              <Input
-                type="url"
-                {...register("linkedin", {
-                  required: "LinkedIn URL is required",
-                  pattern: {
-                    value: /^https?:\/\/(www\.)?linkedin\.com\/.*$/,
-                    message: "Invalid LinkedIn URL",
-                  },
-                })}
-              />
-              {errors.linkedin && (
-                <Text color="red.500" fontSize="sm">
-                  {errors.linkedin.message}
-                </Text>
-              )}
-            </FormControl> */}
-
-            <FormControl id="linkedin" isInvalid={errors.linkedin}>
-              <FormLabel>Linkedin</FormLabel>
-              <Input
-                type="text"
-                placeholder="LinkedIn Profile URL"
-                {...register("linkedin", {
-                  pattern: {
-                    value:
-                      /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-_]+\/?$/,
-                    message: "Please enter a valid LinkedIn URL",
-                  },
-                  validate: (value) =>
-                    !value ||
-                    /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-_\-]+\/?$/.test(
-                      value
-                    ),
-                })}
-              />
-              <FormErrorMessage>
-                {errors.linkedin && errors.linkedin.message}
-              </FormErrorMessage>
-            </FormControl>
-
-            <Stack spacing={10} pt={2}>
-              <Button
-                type="submit"
-                loadingText="Submitting"
-                size="lg"
-                bg={"blue.400"}
-                color={"white"}
-                _hover={{ bg: "blue.500" }}
-              >
-                Sign up
-              </Button>
-            </Stack>
-          </Stack>
-        </Box>
+                <Stack spacing={6} direction={["column", "row"]}>
+                  <Button
+                    bg={"red.400"}
+                    color={"white"}
+                    w="full"
+                    onClick={() => {}}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    bg={"blue.400"}
+                    color={"white"}
+                    w="full"
+                    type="submit"
+                    _hover={{
+                      bg: "blue.500",
+                    }}
+                  >
+                    Submit
+                  </Button>
+                </Stack>
+              </Stack>
+            </Form>
+          }
+        </Formik>
       </Stack>
     </Flex>
   );

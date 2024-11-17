@@ -29,7 +29,7 @@ const Navbar = () => {
   const { user } = useAuth();
 
   return (
-    <Box bg="green.400" height="100px" color="white" mb={20} px={4}>
+    <Box bg="green.400" height="100px" color="white" mb={4} px={4}>
       <Flex justify={"center"} height="100%">
         <HStack width="90%" alignItems="center">
           <HStack alignItems="center">
