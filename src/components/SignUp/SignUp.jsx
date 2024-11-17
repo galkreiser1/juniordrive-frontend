@@ -13,6 +13,15 @@ import {
   SimpleGrid,
   FormErrorMessage,
   useToast,
+  Divider,
+  Text,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
@@ -22,14 +31,10 @@ import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 
 const ProfileSchema = Yup.object().shape({
-  firstName: Yup.string()
+  name: Yup.string()
     .min(2, "Too Short!")
     .max(50, "Too Long!")
     .required("First name is required"),
-  lastName: Yup.string()
-    .min(2, "Too Short!")
-    .max(50, "Too Long!")
-    .required("Last name is required"),
   linkedin: Yup.string()
     .url("Must be a valid URL")
     .matches(
@@ -50,13 +55,14 @@ const ProfileSchema = Yup.object().shape({
 export default function SignUp() {
   const toast = useToast();
   const { user } = useAuth();
-  console.log(user);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleSubmit = async (values) => {
     try {
+      console.log("submitting");
       const response = await axios.post(
         "http://localhost:5000/api/referers",
-        data
+        values
       );
       toast({
         title: "Profile updated",
@@ -66,6 +72,7 @@ export default function SignUp() {
         isClosable: true,
       });
     } catch (error) {
+      console.log(error);
       toast({
         title: "Error",
         description: "Failed to update profile. Please try again.",
@@ -75,6 +82,33 @@ export default function SignUp() {
       });
     }
   };
+
+  const handleRemoveReferral = async () => {
+    try {
+      await axios.delete(`http://localhost:5000/api/referers/${user?.email}`);
+      toast({
+        title: "Referral removed",
+        description: "Your referral profile has been successfully removed",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      onClose();
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Error",
+        description: "Failed to remove referral. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  if (!user?.name || !user?.email) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Flex
@@ -98,11 +132,11 @@ export default function SignUp() {
 
         <Formik
           initialValues={{
-            name: user?.name || "name",
+            name: user?.name || "",
             linkedin: "",
             company: "",
             role: "",
-            email: user?.email,
+            email: user?.email || "",
           }}
           validationSchema={ProfileSchema}
           onSubmit={handleSubmit}
@@ -178,14 +212,6 @@ export default function SignUp() {
 
                 <Stack spacing={6} direction={["column", "row"]}>
                   <Button
-                    bg={"red.400"}
-                    color={"white"}
-                    w="full"
-                    onClick={() => {}}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
                     bg={"blue.400"}
                     color={"white"}
                     w="full"
@@ -201,6 +227,48 @@ export default function SignUp() {
             </Form>
           }
         </Formik>
+
+        <Divider my={8} />
+
+        <Stack spacing={4}>
+          <Heading size="md" color={useColorModeValue("gray.700", "gray.200")}>
+            Remove Referral Profile
+          </Heading>
+          <Text color={useColorModeValue("gray.600", "gray.400")}>
+            Remove your profile from the referrers list. This action cannot be
+            undone.
+          </Text>
+          <Button
+            colorScheme="red"
+            variant="outline"
+            onClick={onOpen}
+            size="lg"
+          >
+            Remove Referral Profile
+          </Button>
+        </Stack>
+
+        <AlertDialog isOpen={isOpen} onClose={onClose}>
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                Remove Referral Profile
+              </AlertDialogHeader>
+
+              <AlertDialogBody>
+                Are you sure? This will remove your profile from the referrers
+                list. This action cannot be undone.
+              </AlertDialogBody>
+
+              <AlertDialogFooter>
+                <Button onClick={onClose}>Cancel</Button>
+                <Button colorScheme="red" onClick={handleRemoveReferral} ml={3}>
+                  Remove
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
       </Stack>
     </Flex>
   );
