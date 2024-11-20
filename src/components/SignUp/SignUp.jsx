@@ -29,6 +29,9 @@ import * as Yup from "yup";
 import { useAuth } from "../../context/AuthContext";
 
 import axios from "axios";
+import { useState, useEffect } from "react";
+
+import capitalizeCompanyName from "../../utils/utils";
 
 const ProfileSchema = Yup.object().shape({
   name: Yup.string()
@@ -56,10 +59,33 @@ export default function SignUp() {
   const toast = useToast();
   const { user } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [referer, setReferer] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/referers/referer/${user?.email}`
+        );
+        setReferer(response.data.referer);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (user?.email) {
+      fetchData();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    console.log("referer: ", referer);
+  }, [referer]);
 
   const handleSubmit = async (values) => {
     try {
-      console.log("submitting");
       const response = await axios.post(
         "http://localhost:5000/api/referers",
         values
@@ -106,7 +132,7 @@ export default function SignUp() {
     }
   };
 
-  if (!user?.name || !user?.email) {
+  if (loading || !user?.name || !user?.email) {
     return <div>Loading...</div>;
   }
 
@@ -133,9 +159,9 @@ export default function SignUp() {
         <Formik
           initialValues={{
             name: user?.name || "",
-            linkedin: "",
-            company: "",
-            role: "",
+            linkedin: referer?.linkedin || "",
+            company: capitalizeCompanyName(referer?.company) || "",
+            role: referer?.role || "",
             email: user?.email || "",
           }}
           validationSchema={ProfileSchema}
@@ -230,23 +256,28 @@ export default function SignUp() {
 
         <Divider my={8} />
 
-        <Stack spacing={4}>
-          <Heading size="md" color={useColorModeValue("gray.700", "gray.200")}>
-            Remove Referral Profile
-          </Heading>
-          <Text color={useColorModeValue("gray.600", "gray.400")}>
-            Remove your profile from the referrers list. This action cannot be
-            undone.
-          </Text>
-          <Button
-            colorScheme="red"
-            variant="outline"
-            onClick={onOpen}
-            size="lg"
-          >
-            Remove Referral Profile
-          </Button>
-        </Stack>
+        {referer && (
+          <Stack spacing={4}>
+            <Heading
+              size="md"
+              color={useColorModeValue("gray.700", "gray.200")}
+            >
+              Remove Referral Profile
+            </Heading>
+            <Text color={useColorModeValue("gray.600", "gray.400")}>
+              Remove your profile from the referrers list. This action cannot be
+              undone.
+            </Text>
+            <Button
+              colorScheme="red"
+              variant="outline"
+              onClick={onOpen}
+              size="lg"
+            >
+              Remove Referral Profile
+            </Button>
+          </Stack>
+        )}
 
         <AlertDialog isOpen={isOpen} onClose={onClose}>
           <AlertDialogOverlay>
