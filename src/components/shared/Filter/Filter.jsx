@@ -27,6 +27,8 @@ import { useEffect } from "react";
 
 import axios from "axios";
 
+import capitalizeCompanyName from "../../../utils/utils";
+
 const Filter = (props) => {
   const [search, setSearch] = useState("");
   const [filteredCompanies, setFilteredCompanies] = useState([]);
@@ -121,7 +123,7 @@ const Filter = (props) => {
                             key={idx}
                             onClick={() => handleSelectCompany(company.name)}
                           >
-                            {company.name}
+                            {capitalizeCompanyName(company.name)}
                           </MenuItem>
                         );
                       })

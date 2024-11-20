@@ -14,6 +14,10 @@ import {
   Button,
   Flex,
   Spinner,
+  VStack,
+  HStack,
+  Icon,
+  Text,
 } from "@chakra-ui/react";
 
 import { useState, useEffect } from "react";
@@ -27,6 +31,9 @@ import "./table.css";
 import axios from "axios";
 
 import capitalizeCompanyName from "../../utils/utils";
+
+import { EmailIcon } from "@chakra-ui/icons";
+import { FaLinkedin } from "react-icons/fa";
 
 const UserTable = (props) => {
   const [referers, setReferers] = useState([]);
@@ -67,7 +74,6 @@ const UserTable = (props) => {
                     <Th>Referer Name</Th>
                     <Th>Role</Th>
                     <Th>Contact Info</Th>
-                    <Th>Location</Th>
                     <Th>Availability</Th>
                   </Tr>
                 </Thead>
@@ -76,27 +82,43 @@ const UserTable = (props) => {
                     referers.map((row, index) => (
                       <Tr key={index}>
                         <Td>{capitalizeCompanyName(row.company)}</Td>
-                        <Td display="flex" gap={4}>
-                          {capitalizeCompanyName(row.name || "")}
-                        </Td>
+                        <Td>{capitalizeCompanyName(row.name || "")}</Td>
                         <Td>{row.role}</Td>
                         <Td>
                           {row.availability === "Available" ? (
-                            <Box mb={1}>
-                              <Link href={row.email} isExternal>
-                                Email
-                              </Link>
-                              {row.linkedin && (
-                                <Link href={row.linkedin} isExternal>
-                                  Linkedin
+                            <VStack align="start" spacing={2}>
+                              <HStack spacing={2}>
+                                <Icon as={EmailIcon} color="gray.500" />
+                                <Link
+                                  href={`mailto:${row.email}`}
+                                  color="blue.500"
+                                  _hover={{
+                                    color: "blue.600",
+                                    textDecoration: "none",
+                                  }}
+                                >
+                                  {row.email}
                                 </Link>
-                              )}
-                            </Box>
+                              </HStack>
+                              <HStack spacing={2}>
+                                <Icon as={FaLinkedin} color="blue.500" />
+                                <Link
+                                  href={row.linkedin}
+                                  isExternal
+                                  color="blue.500"
+                                  _hover={{
+                                    color: "blue.600",
+                                    textDecoration: "none",
+                                  }}
+                                >
+                                  View Profile
+                                </Link>
+                              </HStack>
+                            </VStack>
                           ) : (
                             <span>-</span>
                           )}
                         </Td>
-                        <Td>{row.location || "-"}</Td>
                         <Td>
                           <Badge
                             colorScheme={
