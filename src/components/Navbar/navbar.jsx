@@ -47,19 +47,37 @@ const Navbar = () => {
           <Spacer />
 
           <HStack spacing={10}>
-            <NavLink to="/referal" color="white">
+            // In your NavLink components, replace them with this style:
+            <NavLink
+              to="/referal"
+              style={({ isActive }) => ({
+                color: "white",
+                borderBottom: isActive ? "2px solid white" : "none",
+                paddingBottom: "4px",
+              })}
+            >
               Find Referals
             </NavLink>
-
-            <Link href="#" color="white">
-              Job Scanner
-            </Link>
-            <Link href="#" color="white">
+            <NavLink
+              to="/resources"
+              style={({ isActive }) => ({
+                color: "white",
+                borderBottom: isActive ? "2px solid white" : "none",
+                paddingBottom: "4px",
+              })}
+            >
               Resources
-            </Link>
-            <Link href="#" color="white">
+            </NavLink>
+            <NavLink
+              to="/"
+              style={({ isActive }) => ({
+                color: "white",
+                borderBottom: isActive ? "2px solid white" : "none",
+                paddingBottom: "4px",
+              })}
+            >
               About
-            </Link>
+            </NavLink>
           </HStack>
           <Spacer />
           <HStack spacing={10} width="100px">
