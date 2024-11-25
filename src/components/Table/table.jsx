@@ -73,8 +73,8 @@ const UserTable = (props) => {
                     <Th>COMPANY NAME</Th>
                     <Th>Referer Name</Th>
                     <Th>Role</Th>
-                    <Th>Contact Info</Th>
-                    <Th>Availability</Th>
+                    <Th>Email</Th>
+                    <Th>Linkedin</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -85,48 +85,35 @@ const UserTable = (props) => {
                         <Td>{capitalizeCompanyName(row.name || "")}</Td>
                         <Td>{row.role}</Td>
                         <Td>
-                          {row.availability === "Available" ? (
-                            <VStack align="start" spacing={2}>
-                              <HStack spacing={2}>
-                                <Icon as={EmailIcon} color="gray.500" />
-                                <Link
-                                  href={`mailto:${row.email}`}
-                                  color="blue.500"
-                                  _hover={{
-                                    color: "blue.600",
-                                    textDecoration: "none",
-                                  }}
-                                >
-                                  {row.email}
-                                </Link>
-                              </HStack>
-                              <HStack spacing={2}>
-                                <Icon as={FaLinkedin} color="blue.500" />
-                                <Link
-                                  href={row.linkedin}
-                                  isExternal
-                                  color="blue.500"
-                                  _hover={{
-                                    color: "blue.600",
-                                    textDecoration: "none",
-                                  }}
-                                >
-                                  View Profile
-                                </Link>
-                              </HStack>
-                            </VStack>
-                          ) : (
-                            <span>-</span>
-                          )}
+                          <HStack spacing={2}>
+                            <Icon as={EmailIcon} color="gray.500" />
+                            <Link
+                              href={`mailto:${row.email}`}
+                              color="blue.500"
+                              _hover={{
+                                color: "blue.600",
+                                textDecoration: "none",
+                              }}
+                            >
+                              {row.email}
+                            </Link>
+                          </HStack>
                         </Td>
                         <Td>
-                          <Badge
-                            colorScheme={
-                              row.availability === "Available" ? "green" : "red"
-                            }
-                          >
-                            {row.availability}
-                          </Badge>
+                          <HStack spacing={2}>
+                            <Icon as={FaLinkedin} color="blue.500" />
+                            <Link
+                              href={row.linkedin}
+                              isExternal
+                              color="blue.500"
+                              _hover={{
+                                color: "blue.600",
+                                textDecoration: "none",
+                              }}
+                            >
+                              View Profile
+                            </Link>
+                          </HStack>
                         </Td>
                       </Tr>
                     ))

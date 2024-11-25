@@ -121,7 +121,11 @@ const Filter = (props) => {
                         return (
                           <MenuItem
                             key={idx}
-                            onClick={() => handleSelectCompany(company.name)}
+                            onClick={() =>
+                              handleSelectCompany(
+                                capitalizeCompanyName(company.name)
+                              )
+                            }
                           >
                             {capitalizeCompanyName(company.name)}
                           </MenuItem>
