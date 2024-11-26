@@ -29,7 +29,6 @@ const AvatarDropdown = () => {
         {},
         { withCredentials: true }
       );
-      console.log("Logout response:", response);
       logout();
       toast({
         title: "Logged out successfully",
@@ -54,7 +53,7 @@ const AvatarDropdown = () => {
       <MenuButton>
         <Avatar size="md" name={user?.name} cursor="pointer" />
       </MenuButton>
-      <MenuList>
+      <MenuList mt="-2" py="0">
         <MenuItem
           color="black"
           onClick={() => {
