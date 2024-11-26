@@ -21,44 +21,34 @@ import { useState, useEffect } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { FaBook, FaUsers, FaFile } from "react-icons/fa";
 import AddResourceModal from "../AddResourceModal/AddResourceModal";
+import axios from "axios";
 
 const ResourcesTable = () => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("ALL");
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const mockData = [
-      {
-        id: 1,
-        name: "LeetCode",
-        type: "PLATFORM",
-        category: "Practice",
-        description: "Coding practice platform with 2000+ problems",
-        link: "https://leetcode.com",
-      },
-      {
-        id: 2,
-        name: "System Design Community",
-        type: "COMMUNITY",
-        category: "Learning",
-        description:
-          "Active community discussing system design patterns and practices",
-        link: "https://t.me/systemdesign",
-      },
-      {
-        id: 3,
-        name: "Interview Preparation Guide",
-        type: "GUIDE",
-        category: "Guide",
-        description: "Comprehensive guide covering DSA and system design",
-        link: "/documents/guide.pdf",
-      },
-    ];
+    const fetchResources = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("http://localhost:5000/api/resources");
+        setResources(response.data.resources);
+      } catch (err) {
+        console.error("Failed to fetch resources:", err);
+        setError("Failed to load resources. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setResources(mockData);
-    setLoading(false);
+    fetchResources();
   }, []);
+
+  const handleAddResource = (newResource) => {
+    setResources((prevResources) => [...prevResources, newResource]);
+  };
 
   const getResourceIcon = (type) => {
     switch (type) {
@@ -94,7 +84,13 @@ const ResourcesTable = () => {
     <>
       {loading && <Spinner size="xl" />}
 
-      {!loading && (
+      {error && (
+        <Flex justifyContent="center" m={4}>
+          <Text color="red.500">{error}</Text>
+        </Flex>
+      )}
+
+      {!loading && !error && (
         <Flex justifyContent="center">
           <Box width="80%" shadow="sm" rounded="lg" bg="white" p={6}>
             <Flex justifyContent="space-between" alignItems="center" mb={6}>
@@ -132,7 +128,7 @@ const ResourcesTable = () => {
                 </Button>
               </ButtonGroup>
 
-              <AddResourceModal />
+              <AddResourceModal onAdd={handleAddResource} />
             </Flex>
 
             <TableContainer>
