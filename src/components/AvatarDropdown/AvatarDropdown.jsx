@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 
 import axios from "axios";
 
+import { endpoints } from "../../config/api";
+
 const AvatarDropdown = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -25,7 +27,7 @@ const AvatarDropdown = () => {
     try {
       console.log("Logging out");
       const response = await axios.post(
-        "http://localhost:5000/api/auth/logout",
+        endpoints.auth.logout,
         {},
         { withCredentials: true }
       );
@@ -43,6 +45,7 @@ const AvatarDropdown = () => {
         duration: 3000,
       });
     }
+
     //  finally {
     //   setLoading(false);
     // }
