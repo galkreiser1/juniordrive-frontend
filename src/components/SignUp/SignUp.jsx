@@ -33,6 +33,8 @@ import { useState, useEffect } from "react";
 
 import capitalizeCompanyName from "../../utils/utils";
 
+import { endpoints } from "../../config/api";
+
 const ProfileSchema = Yup.object().shape({
   name: Yup.string()
     .min(2, "Too Short!")
@@ -66,7 +68,7 @@ export default function SignUp() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/referers/referer/${user?.email}`
+          endpoints.referers.byEmail(user?.email)
         );
         setReferer(response.data.referer);
       } catch (error) {
@@ -86,10 +88,7 @@ export default function SignUp() {
 
   const handleSubmit = async (values) => {
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/referers",
-        values
-      );
+      const response = await axios.post(endpoints.referers.base, values);
       toast({
         title: "Profile updated",
         description: "Your profile has been successfully updated",
@@ -111,7 +110,7 @@ export default function SignUp() {
 
   const handleRemoveReferral = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/referers/${user?.email}`);
+      await axios.delete(endpoints.referers.delete(user?.email));
       toast({
         title: "Referral removed",
         description: "Your referral profile has been successfully removed",

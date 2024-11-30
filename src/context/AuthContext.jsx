@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { endpoints } from "../config/api";
 
 const AuthContext = createContext(null);
 
@@ -10,12 +11,9 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/auth/status",
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axios.get(endpoints.auth.status, {
+        withCredentials: true,
+      });
 
       if (response.data.isAuthenticated) {
         setUser(response.data.user);

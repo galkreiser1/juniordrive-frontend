@@ -35,15 +35,15 @@ import capitalizeCompanyName from "../../utils/utils";
 import { EmailIcon } from "@chakra-ui/icons";
 import { FaLinkedin } from "react-icons/fa";
 
+import { endpoints } from "../../config/api";
+
 const UserTable = (props) => {
   const [referers, setReferers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async (company) => {
-      const response = await axios.get(
-        "http://localhost:5000/api/referers/" + company
-      );
+      const response = await axios.get(endpoints.referers.byCompany(company));
       setReferers(response.data);
     };
     fetchData(props.selectedCompany);

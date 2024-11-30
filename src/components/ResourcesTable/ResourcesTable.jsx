@@ -22,6 +22,8 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { FaBook, FaUsers, FaFile } from "react-icons/fa";
 import AddResourceModal from "../AddResourceModal/AddResourceModal";
 import axios from "axios";
+import { FiDownload } from "react-icons/fi";
+import { endpoints } from "../../config/api";
 
 const ResourcesTable = () => {
   const [resources, setResources] = useState([]);
@@ -33,7 +35,7 @@ const ResourcesTable = () => {
     const fetchResources = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:5000/api/resources");
+        const response = await axios.get(endpoints.resources.base);
         setResources(response.data.resources);
       } catch (err) {
         console.error("Failed to fetch resources:", err);
@@ -184,20 +186,41 @@ const ResourcesTable = () => {
                           </Text>
                         </Td>
                         <Td>
-                          <Link
-                            href={resource.link}
-                            isExternal
-                            color="blue.500"
-                            _hover={{
-                              color: "blue.600",
-                              textDecoration: "none",
-                            }}
-                          >
-                            <HStack>
-                              <Text>Open</Text>
-                              <ExternalLinkIcon boxSize={4} />
+                          {resource.fileUrl ? (
+                            <HStack spacing={2}>
+                              <Link
+                                href={resource.fileUrl}
+                                isExternal
+                                target="_blank"
+                                color="blue.500"
+                                _hover={{
+                                  color: "blue.600",
+                                  textDecoration: "none",
+                                }}
+                              >
+                                <HStack>
+                                  <Text>View</Text>
+                                  <ExternalLinkIcon boxSize={4} />
+                                </HStack>
+                              </Link>
                             </HStack>
-                          </Link>
+                          ) : (
+                            // For regular links - keep as is
+                            <Link
+                              href={resource.link}
+                              isExternal
+                              color="blue.500"
+                              _hover={{
+                                color: "blue.600",
+                                textDecoration: "none",
+                              }}
+                            >
+                              <HStack>
+                                <Text>Open</Text>
+                                <ExternalLinkIcon boxSize={4} />
+                              </HStack>
+                            </Link>
+                          )}
                         </Td>
                       </Tr>
                     ))

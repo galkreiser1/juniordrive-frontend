@@ -29,6 +29,8 @@ import axios from "axios";
 
 import capitalizeCompanyName from "../../../utils/utils";
 
+import { endpoints } from "../../../config/api";
+
 const Filter = (props) => {
   const [search, setSearch] = useState("");
   const [companies, setCompanies] = useState([]);
@@ -38,7 +40,7 @@ const Filter = (props) => {
   const searchCompanies = async (searchTerm) => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/company`, {
+      const response = await axios.get(endpoints.companies.base, {
         params: {
           search: searchTerm,
           limit: 20,

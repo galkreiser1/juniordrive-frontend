@@ -3,6 +3,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { Button, useToast } from "@chakra-ui/react";
 import { useAuth } from "../../context/AuthContext";
+import { endpoints } from "../../config/api";
 
 const LoginButton = () => {
   const [loading, setLoading] = useState(false);
@@ -13,7 +14,7 @@ const LoginButton = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        endpoints.auth.login,
         {
           token: credentialResponse.credential,
         },
