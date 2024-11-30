@@ -20,10 +20,10 @@ import {
   Stack,
   FormHelperText,
 } from "@chakra-ui/react";
-import { useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import { endpoints } from "../../config/api";
 
 // Validation schema
 const ResourceSchema = Yup.object().shape({
@@ -52,13 +52,33 @@ const ResourceSchema = Yup.object().shape({
 const AddResourceModal = ({ onAdd }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
-  const [guideType, setGuideType] = useState("link");
 
   const handleSubmit = async (values, actions) => {
     try {
-      // For now, just log the values
-      console.log("Form values:", values);
-      console.log("File:", values.file);
+      let response;
+
+      // If it's a GUIDE with a file upload
+      if (values.type === "GUIDE" && values.file) {
+        const formData = new FormData();
+        formData.append("file", values.file);
+        formData.append("name", values.name);
+        formData.append("type", values.type);
+        formData.append("description", values.description);
+
+        response = await axios.post(endpoints.resources.withFile, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } else {
+        // Regular resource (no file)
+        response = await axios.post(endpoints.resources.base, {
+          name: values.name,
+          type: values.type,
+          description: values.description,
+          link: values.link,
+        });
+      }
 
       toast({
         title: "Resource added",
@@ -135,7 +155,7 @@ const AddResourceModal = ({ onAdd }) => {
                             placeholder="Select type"
                             onChange={(e) => {
                               if (e.target.value !== "GUIDE") {
-                                setGuideType("link");
+                                setFieldValue("guideType", "link");
                               }
                               field.onChange(e);
                             }}
@@ -155,9 +175,9 @@ const AddResourceModal = ({ onAdd }) => {
                       <FormControl>
                         <FormLabel>Guide Type</FormLabel>
                         <RadioGroup
-                          value={guideType}
+                          value={values.guideType}
                           onChange={(value) => {
-                            setGuideType(value);
+                            setFieldValue("guideType", value);
                             if (value === "link") {
                               setFieldValue("file", null);
                             } else {
@@ -174,7 +194,8 @@ const AddResourceModal = ({ onAdd }) => {
                     )}
 
                     {(values.type !== "GUIDE" ||
-                      (values.type === "GUIDE" && guideType === "link")) && (
+                      (values.type === "GUIDE" &&
+                        values.guideType === "link")) && (
                       <Field name="link">
                         {({ field, form }) => (
                           <FormControl
@@ -194,7 +215,7 @@ const AddResourceModal = ({ onAdd }) => {
                       </Field>
                     )}
 
-                    {values.type === "GUIDE" && guideType === "file" && (
+                    {values.type === "GUIDE" && values.guideType === "file" && (
                       <Field name="file">
                         {({ field, form }) => (
                           <FormControl
