@@ -8,7 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./context/AuthContext";
 import Footer from "./components/Footer/Footer";
-import About from "./components/About/about";
+import About from "./components/About/About";
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
