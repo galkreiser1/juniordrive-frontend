@@ -24,8 +24,8 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { endpoints } from "../../config/api";
+import { useResources } from "../../context/ResourceContext";
 
-// Validation schema
 const ResourceSchema = Yup.object().shape({
   name: Yup.string()
     .min(2, "Too Short!")
@@ -45,13 +45,15 @@ const ResourceSchema = Yup.object().shape({
   file: Yup.mixed().when(["type", "guideType"], {
     is: (type, guideType) => type === "GUIDE" && guideType === "file",
     then: () => Yup.mixed().required("File is required"),
-    otherwise: () => Yup.mixed(),
+    otherwise: () => Yup.mixed().nullable(),
   }),
 });
 
 const AddResourceModal = ({ onAdd }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+
+  const { addResource } = useResources();
 
   const handleSubmit = async (values, actions) => {
     try {
@@ -79,6 +81,8 @@ const AddResourceModal = ({ onAdd }) => {
           link: values.link,
         });
       }
+
+      addResource(response.data.resource);
 
       toast({
         title: "Resource added",

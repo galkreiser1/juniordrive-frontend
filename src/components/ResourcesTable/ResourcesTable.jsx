@@ -24,27 +24,14 @@ import AddResourceModal from "../AddResourceModal/AddResourceModal";
 import axios from "axios";
 import { FiDownload } from "react-icons/fi";
 import { endpoints } from "../../config/api";
+import { useResources } from "../../context/ResourceContext";
 
 const ResourcesTable = () => {
-  const [resources, setResources] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("ALL");
-  const [error, setError] = useState(null);
+
+  const { resources, loading, error, fetchResources } = useResources();
 
   useEffect(() => {
-    const fetchResources = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(endpoints.resources.base);
-        setResources(response.data.resources);
-      } catch (err) {
-        console.error("Failed to fetch resources:", err);
-        setError("Failed to load resources. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchResources();
   }, []);
 

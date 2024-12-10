@@ -9,6 +9,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./context/AuthContext";
 import Footer from "./components/Footer/Footer";
 import About from "./components/About/About";
+import { ResourceProvider } from "./context/ResourceContext";
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -19,18 +20,20 @@ function App() {
         <ChakraProvider>
           <Router>
             <AuthProvider>
-              <Box minH="100vh" display="flex" flexDir="column">
-                <Navbar />
-                <Box flex="1">
-                  <Routes>
-                    <Route path="/referal" element={<Referal />} />
-                    <Route path="/signup" element={<SignUp />} />
-                    <Route path="/resources" element={<ResourcesTable />} />
-                    <Route path="/" element={<About />} />
-                  </Routes>
+              <ResourceProvider>
+                <Box minH="100vh" display="flex" flexDir="column">
+                  <Navbar />
+                  <Box flex="1">
+                    <Routes>
+                      <Route path="/referal" element={<Referal />} />
+                      <Route path="/signup" element={<SignUp />} />
+                      <Route path="/resources" element={<ResourcesTable />} />
+                      <Route path="/" element={<About />} />
+                    </Routes>
+                  </Box>
+                  <Footer />
                 </Box>
-                <Footer />
-              </Box>
+              </ResourceProvider>
             </AuthProvider>
           </Router>
         </ChakraProvider>
