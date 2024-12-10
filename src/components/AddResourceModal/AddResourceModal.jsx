@@ -19,12 +19,14 @@ import {
   Radio,
   Stack,
   FormHelperText,
+  Tooltip,
 } from "@chakra-ui/react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { endpoints } from "../../config/api";
 import { useResources } from "../../context/ResourceContext";
+import { useAuth } from "../../context/AuthContext";
 
 const ResourceSchema = Yup.object().shape({
   name: Yup.string()
@@ -54,6 +56,7 @@ const AddResourceModal = ({ onAdd }) => {
   const toast = useToast();
 
   const { addResource } = useResources();
+  const { user } = useAuth();
 
   const handleSubmit = async (values, actions) => {
     try {
@@ -109,9 +112,11 @@ const AddResourceModal = ({ onAdd }) => {
 
   return (
     <>
-      <Button colorScheme="blue" onClick={onOpen}>
-        Add Resource
-      </Button>
+      <Tooltip label="Sign in to add resources" isDisabled={user}>
+        <Button colorScheme="blue" onClick={onOpen} isDisabled={!user}>
+          Add Resource
+        </Button>
+      </Tooltip>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

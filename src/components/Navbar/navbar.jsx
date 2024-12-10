@@ -80,7 +80,7 @@ const Navbar = () => {
             </NavLink>
           </HStack>
           <Spacer />
-          <HStack spacing={10} width="100px">
+          <HStack spacing={10} width="100px" mr={10}>
             {!user && <LoginButton />}
             {user && <AvatarDropdown />}
           </HStack>

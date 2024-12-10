@@ -35,6 +35,8 @@ import capitalizeCompanyName from "../../utils/utils";
 
 import { endpoints } from "../../config/api";
 
+import { Navigate } from "react-router-dom";
+
 const ProfileSchema = Yup.object().shape({
   name: Yup.string()
     .min(2, "Too Short!")
@@ -130,6 +132,10 @@ export default function SignUp() {
       });
     }
   };
+
+  if (!user) {
+    return <Navigate to="/" />;
+  }
 
   if (loading || !user?.name || !user?.email) {
     return <div>Loading...</div>;
