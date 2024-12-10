@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import { Button, useToast } from "@chakra-ui/react";
+import { Button, useToast, Box } from "@chakra-ui/react";
 import { useAuth } from "../../context/AuthContext";
 import { endpoints } from "../../config/api";
 
@@ -44,33 +44,36 @@ const LoginButton = () => {
 
   return (
     <>
-      <GoogleLogin
-        onSuccess={handleLoginSuccess}
-        onError={() => {
-          toast({
-            title: "Login failed",
-            status: "error",
-            duration: 3000,
-          });
-        }}
-        size="large"
-        theme="filled_blue"
-        render={(renderProps) => (
-          <Button
-            {...renderProps}
-            colorScheme="blue"
-            isLoading={loading}
-            loadingText="Signing in"
-            variant="solid"
-            size="lg"
-            leftIcon={<i className="fab fa-google"></i>}
-            onClick={renderProps.onClick}
-            borderRadius="full"
-          >
-            Login with Google
-          </Button>
-        )}
-      />
+      <Box maxW="300px">
+        <GoogleLogin
+          onSuccess={handleLoginSuccess}
+          onError={() => {
+            toast({
+              title: "Login failed",
+              status: "error",
+              duration: 3000,
+            });
+          }}
+          size="large"
+          theme="filled_blue"
+          render={(renderProps) => (
+            <Button
+              {...renderProps}
+              colorScheme="blue"
+              isLoading={loading}
+              loadingText="Signing in"
+              variant="solid"
+              size="lg"
+              leftIcon={<i className="fab fa-google"></i>}
+              onClick={renderProps.onClick}
+              borderRadius="full"
+              w="100%"
+            >
+              Login with Google
+            </Button>
+          )}
+        />
+      </Box>
     </>
   );
 };
