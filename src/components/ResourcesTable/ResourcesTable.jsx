@@ -75,7 +75,7 @@ const ResourcesTable = () => {
     const searchMatch =
       resource.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       resource.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return filterMatch && searchMatch;
+    return filterMatch && searchMatch && resource.isApproved;
   });
 
   return (
@@ -221,7 +221,7 @@ const ResourcesTable = () => {
                               }}
                             >
                               <HStack>
-                                <Text>Open</Text>
+                                <Text>View</Text>
                                 <ExternalLinkIcon boxSize={4} />
                               </HStack>
                             </Link>
