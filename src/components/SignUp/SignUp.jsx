@@ -84,10 +84,6 @@ export default function SignUp() {
     }
   }, [user]);
 
-  useEffect(() => {
-    console.log("referer: ", referer);
-  }, [referer]);
-
   const handleSubmit = async (values) => {
     try {
       const response = await axios.post(endpoints.referers.base, values);
