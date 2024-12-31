@@ -15,10 +15,13 @@ import {
   Icon,
   Text,
   ButtonGroup,
+  Input,
+  InputGroup,
+  InputLeftElement,
 } from "@chakra-ui/react";
 
 import { useState, useEffect } from "react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { ExternalLinkIcon, SearchIcon } from "@chakra-ui/icons";
 import { FaBook, FaUsers, FaFile } from "react-icons/fa";
 import AddResourceModal from "../AddResourceModal/AddResourceModal";
 import axios from "axios";
@@ -28,6 +31,7 @@ import { useResources } from "../../context/ResourceContext";
 
 const ResourcesTable = () => {
   const [activeFilter, setActiveFilter] = useState("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { resources, loading, error, fetchResources } = useResources();
 
@@ -65,9 +69,14 @@ const ResourcesTable = () => {
     }
   };
 
-  const filteredResources = resources.filter(
-    (resource) => activeFilter === "ALL" || resource.type === activeFilter
-  );
+  const filteredResources = resources.filter((resource) => {
+    const filterMatch =
+      activeFilter === "ALL" || resource.type === activeFilter;
+    const searchMatch =
+      resource.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      resource.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return filterMatch && searchMatch;
+  });
 
   return (
     <>
@@ -82,42 +91,51 @@ const ResourcesTable = () => {
       {!loading && !error && (
         <Flex justifyContent="center">
           <Box width="80%" shadow="sm" rounded="lg" bg="white" p={6}>
-            <Flex justifyContent="space-between" alignItems="center" mb={6}>
-              <ButtonGroup size="sm" isAttached spacing="1" mx={2}>
-                <Button
-                  colorScheme={activeFilter === "ALL" ? "blue" : "gray"}
-                  onClick={() => setActiveFilter("ALL")}
-                  px={6}
-                  mr="1px"
-                >
-                  All Resources
-                </Button>
-                <Button
-                  colorScheme={activeFilter === "PLATFORM" ? "blue" : "gray"}
-                  onClick={() => setActiveFilter("PLATFORM")}
-                  px={6}
-                  mr="1px"
-                >
-                  Platforms
-                </Button>
-                <Button
-                  colorScheme={activeFilter === "COMMUNITY" ? "blue" : "gray"}
-                  onClick={() => setActiveFilter("COMMUNITY")}
-                  px={6}
-                  mr="1px"
-                >
-                  Communities
-                </Button>
-                <Button
-                  colorScheme={activeFilter === "GUIDE" ? "blue" : "gray"}
-                  onClick={() => setActiveFilter("GUIDE")}
-                  px={6}
-                >
-                  Guides
-                </Button>
-              </ButtonGroup>
+            {/* Tabs/Filter Buttons first */}
+            <ButtonGroup size="sm" isAttached spacing="1" mb={6}>
+              <Button
+                colorScheme={activeFilter === "ALL" ? "blue" : "gray"}
+                onClick={() => setActiveFilter("ALL")}
+                px={6}
+              >
+                All Resources
+              </Button>
+              <Button
+                colorScheme={activeFilter === "PLATFORM" ? "blue" : "gray"}
+                onClick={() => setActiveFilter("PLATFORM")}
+                px={6}
+              >
+                Platforms
+              </Button>
+              <Button
+                colorScheme={activeFilter === "COMMUNITY" ? "blue" : "gray"}
+                onClick={() => setActiveFilter("COMMUNITY")}
+                px={6}
+              >
+                Communities
+              </Button>
+              <Button
+                colorScheme={activeFilter === "GUIDE" ? "blue" : "gray"}
+                onClick={() => setActiveFilter("GUIDE")}
+                px={6}
+              >
+                Guides
+              </Button>
+            </ButtonGroup>
 
-              <AddResourceModal onAdd={handleAddResource} />
+            {/* Search and Add Resource on same line */}
+            <Flex justify="space-between" align="center" mb={6}>
+              <InputGroup maxW="500px">
+                <InputLeftElement pointerEvents="none">
+                  <SearchIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  placeholder="Search resources..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </InputGroup>
+              <AddResourceModal />
             </Flex>
 
             <TableContainer>
