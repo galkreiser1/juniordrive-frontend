@@ -74,15 +74,20 @@ const AddResourceModal = ({ onAdd }) => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true,
         });
       } else {
         // Regular resource (no file)
-        response = await axios.post(endpoints.resources.base, {
-          name: values.name,
-          type: values.type,
-          description: values.description,
-          link: values.link,
-        });
+        response = await axios.post(
+          endpoints.resources.base,
+          {
+            name: values.name,
+            type: values.type,
+            description: values.description,
+            link: values.link,
+          },
+          { withCredentials: true }
+        );
       }
 
       addResource(response.data.resource);
